@@ -5,10 +5,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Flat(models.Model):
-    owner = models.CharField('ФИО владельца', max_length=200)
-    owner_pure_phone = PhoneNumberField(region='RU', null=True, blank=True, verbose_name='Нормализованный номер владельца')
-    owners_phonenumber = models.CharField('Номер владельца', max_length=20)
-    new_building = models.BooleanField('Новое здание', null=True, blank=True)
+    new_building = models.BooleanField('Новое здание', null=True, blank=True, db_index=True)
     created_at = models.DateTimeField(
         'Когда создано объявление',
         default=timezone.now,
@@ -57,8 +54,8 @@ class Flat(models.Model):
         return f'{self.town}, {self.address} ({self.price}р.)'
     
 class Complaint(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name="кто пожаловался", null=True)
-    flat = models.ForeignKey(Flat, on_delete=models.CASCADE, verbose_name="на какую квартиру пожаловался")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name="кто пожаловался", null=True, related_name="users")
+    flat = models.ForeignKey(Flat, on_delete=models.CASCADE, verbose_name="на какую квартиру пожаловался", related_name="flats")
     complaint_text = models.TextField("Текст жалобы")
 
 

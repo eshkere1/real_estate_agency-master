@@ -5,9 +5,12 @@ from django.db import migrations
 
 def normаlise_numbers(apps, schema_editor):
     Flat = apps.get_model('property', 'Flat')
-    flats = Flat.objects.all()
+    flats = Flat.objects.all().iterator()
     for flat in flats:
-        parsed_number = phonenumbers.parse(flat.owners_phonenumber, 'RU')
+        try:
+            parsed_number = phonenumbers.parse(flat.owners_phonenumber, 'RU')
+        except NumberParseException:
+            print("Номер пустой или сильно некорректный")
         if phonenumbers.is_valid_number(parsed_number):
             pure_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
             flat.owner_pure_phone = pure_number
